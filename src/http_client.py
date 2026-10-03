@@ -1,10 +1,21 @@
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
 
 
+@dataclass
+class HTTPExchange:
+    """Данные одного HTTP-вызова: запрос, ответ или ошибка."""
+    request: httpx.Request
+    response: httpx.Response | None = None
+    error_type: str | None = None
+    error_message: str | None = None
+
+
 class HTTPClient:
     """Настриаваемая обертка для HTTP-запросов к тестируемому API."""
+
     def __init__(
         self,
         base_url: str,
@@ -15,6 +26,7 @@ class HTTPClient:
             timeout=timeout,
             follow_redirects=False,
         )
+        self.history: list[HTTPExchange] = []
 
     def request(
         self,
@@ -22,11 +34,29 @@ class HTTPClient:
         path: str,
         **kwargs: Any,
     ) -> httpx.Response:
-        return self._client.request(
-            method=method,
-            url=path,
-            **kwargs,
+        try:
+            response = self._client.request(
+                method=method,
+                url=path,
+                **kwargs,
+            )
+        except httpx.RequestError as error:
+            self.history.append(
+                HTTPExchange(
+                    request=error.request,
+                    error_type=type(error).__name__,
+                    error_message=str(error),
+                )
+            )
+            raise
+
+        self.history.append(
+            HTTPExchange(
+                request=response.request,
+                response=response,
+            )
         )
+        return response
 
     def close(self) -> None:
         """Закрывает сетевые соединения и освобождает связанные ресурсы."""
