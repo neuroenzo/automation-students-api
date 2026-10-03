@@ -27,6 +27,7 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
+    "--import-mode=importlib",
     "--showlocals",
 ]
 
