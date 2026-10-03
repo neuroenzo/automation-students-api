@@ -26,6 +26,8 @@ python_functions = ["test_*"]
 
 addopts = [
     "-ra",
+    "--alluredir=allure-results",
+    "--clean-alluredir",
     "--strict-markers",
     "--strict-config",
     "--import-mode=importlib",
