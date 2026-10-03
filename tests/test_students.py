@@ -9,8 +9,9 @@ class TestStudents:
     @pytest.mark.api
     @pytest.mark.smoke
     def test_get_students(self, students_api: StudentsAPI) -> None:
-        """Тест успешного получения списка студентов."""
-        response = students_api.get_students()
+        """Тест успешного получения списка студентов"""
+        with allure.step("Отправить GET /student"):
+            response = students_api.get_students()
 
         assert response.status_code == 200
 
