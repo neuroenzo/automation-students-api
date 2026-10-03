@@ -12,3 +12,7 @@ wheels/
 .env
 .idea/
 .pytest_cache/
+
+# Allure
+allure-results/
+allure-report/
