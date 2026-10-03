@@ -7,6 +7,7 @@ from src.schemas.students import STUDENTS
 
 class TestStudents:
     @pytest.mark.api
+    @pytest.mark.smoke
     def test_get_students(self, students_api: StudentsAPI) -> None:
         """Тест успешного получения списка студентов."""
         response = students_api.get_students()
