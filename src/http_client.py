@@ -7,6 +7,7 @@ import httpx
 @dataclass
 class HTTPExchange:
     """Данные одного HTTP-вызова: запрос, ответ или ошибка."""
+
     request: httpx.Request
     response: httpx.Response | None = None
     error_type: str | None = None
