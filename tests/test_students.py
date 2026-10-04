@@ -10,7 +10,7 @@ from src.schemas.students import DELETE_STUDENT_RESPONSE, STUDENT_RESPONSE, STUD
 from src.students_api import StudentsAPI
 
 
-@allure.feature("API для управления студентами")
+@allure.feature("Students API")
 class TestStudents:
     @pytest.mark.api
     @pytest.mark.smoke
