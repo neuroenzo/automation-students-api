@@ -16,6 +16,16 @@ def students_api(http_client: HTTPClient) -> StudentsAPI:
 
 
 @pytest.fixture
+def students_cleanup(students_api: StudentsAPI):
+    student_ids: set[int] = set()
+
+    yield student_ids
+
+    for student_id in student_ids:
+        students_api.delete_student(student_id)
+
+
+@pytest.fixture
 def fake() -> Faker:
     return Faker(locale="ru_Ru")
 
@@ -39,11 +49,15 @@ def prepare_student_data(fake: Faker) -> StudentPayload:
 def created_student(
     students_api: StudentsAPI,
     fake: Faker,
+    students_cleanup: set[int],
 ) -> dict[str, Any]:
     response = students_api.create_student(_build_student(fake))
-    assert response.is_success
-
     data = response.json()
+
+    if "student" in data:
+        students_cleanup.add(data["student"]["id"])
+
+    assert response.is_success
     validate(
         instance=data,
         schema=STUDENT_RESPONSE,
