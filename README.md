@@ -62,3 +62,14 @@ uv run pytest -v -s -l --alluredir=allure-results
 ```shell
 allure serve allure-results
 ```
+
+### Запуск через Make
+
+```shell
+make all-tests
+make smoke
+make negative
+make allure
+```
+
+Команда `make allure` сначала запускает тесты, затем открывает Allure-отчет.

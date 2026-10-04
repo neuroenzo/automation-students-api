@@ -13,4 +13,6 @@ negative:
 	$(PYTEST) $(PYTEST_OPTIONS) -m negative
 
 allure:
-	allure serve allure-results
+	$(PYTEST) $(PYTEST_OPTIONS); status=$$?; \
+	allure serve allure-results; \
+	exit $$status
