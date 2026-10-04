@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import allure
@@ -35,47 +36,58 @@ def _parse_body(content: bytes) -> Any:
         return text
 
 
-def attach_http_history(history: list[HTTPExchange]) -> None:
-    """Прикладывает лог HTTP-вызовов к текущему тесту в Allure"""
+def attach_http_history(
+    history: list[HTTPExchange],
+    test_dir: Path,
+) -> None:
+    """Сохраняет HTTP-лог и прикладывает его к текущему тесту в Allure"""
     exchanges = []
 
     for index, exchange in enumerate(history, start=1):
         response = exchange.response
 
-        exchanges.append({
-            "number": index,
-            "request": {
-                "method": exchange.request.method,
-                "url": str(exchange.request.url),
-                "headers": _mask_headers(exchange.request.headers),
-                "body": _parse_body(exchange.request.content),
-            },
-            "response": (
-                {
-                    "status_code": response.status_code,
-                    "headers": _mask_headers(response.headers),
-                    "body": _parse_body(response.content),
-                }
-                if response is not None
-                else None
-            ),
-            "error": (
-                {
-                    "type": exchange.error_type,
-                    "message": exchange.error_message,
-                }
-                if exchange.error_type is not None
-                else None
-            ),
-        })
+        exchanges.append(
+            {
+                "number": index,
+                "request": {
+                    "method": exchange.request.method,
+                    "url": str(exchange.request.url),
+                    "headers": _mask_headers(exchange.request.headers),
+                    "body": _parse_body(exchange.request.content),
+                },
+                "response": (
+                    {
+                        "status_code": response.status_code,
+                        "headers": _mask_headers(response.headers),
+                        "body": _parse_body(response.content),
+                    }
+                    if response is not None
+                    else None
+                ),
+                "error": (
+                    {
+                        "type": exchange.error_type,
+                        "message": exchange.error_message,
+                    }
+                    if exchange.error_type is not None
+                    else None
+                ),
+            }
+        )
 
     log = {
         "request_count": len(exchanges),
         "exchanges": exchanges,
     }
 
-    allure.attach(
+    log_path = test_dir / "http-log.json"
+    log_path.write_text(
         json.dumps(log, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    allure.attach.file(
+        str(log_path),
         name="HTTP log",
         attachment_type=allure.attachment_type.JSON,
     )
