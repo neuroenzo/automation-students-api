@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from typing import Any
 
 import httpx
 
@@ -20,11 +21,16 @@ class StudentsAPI:
             self.STUDENTS_PATH,
         )
 
-    def create_student(self, student: StudentPayload) -> httpx.Response:
+    def create_student(
+        self,
+        student: StudentPayload | dict[str, Any],
+    ) -> httpx.Response:
+        payload = asdict(student) if isinstance(student, StudentPayload) else student
+
         return self._http_client.request(
             "POST",
             self.STUDENTS_PATH,
-            json=asdict(student),
+            json=payload,
         )
 
     def update_student(

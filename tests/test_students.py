@@ -47,7 +47,7 @@ class TestStudents:
             response = students_api.create_student(prepare_student_data)
 
         with allure.step("Проверить статус ответа"):
-            assert response.status_code == 200
+            assert response.status_code == 201
 
         with allure.step("Проверить тело ответа"):
             data = response.json()
@@ -77,6 +77,70 @@ class TestStudents:
             )
 
             assert data["student"] in students_data["students"]
+
+    @pytest.mark.api
+    @pytest.mark.negative
+    @pytest.mark.parametrize(
+        "missing_field",
+        [
+            "email",
+            "gender",
+            "name",
+            "phone_no",
+            "status",
+        ],
+    )
+    @allure.title("Создание студента без обязательного поля: {missing_field}")
+    def test_create_student_without_required_field(
+        self,
+        students_api: StudentsAPI,
+        prepare_student_data: StudentPayload,
+        missing_field: str,
+    ) -> None:
+        student_payload = asdict(prepare_student_data)
+        student_payload.pop(missing_field)
+
+        with allure.step(f"Отправить POST /student без поля {missing_field}"):
+            response = students_api.create_student(student_payload)
+
+        with allure.step("Проверить статус ответа"):
+            assert response.status_code == 400
+
+        with allure.step("Проверить тело ответа"):
+            assert response.json() == {
+                "message": "Wrong JSON, student not created",
+                "status": 0,
+            }
+
+    @pytest.mark.api
+    @pytest.mark.negative
+    @allure.title("Повторное создание студента с одинаковыми данными")
+    def test_create_duplicate_student(
+        self,
+        students_api: StudentsAPI,
+        prepare_student_data: StudentPayload,
+    ) -> None:
+        with allure.step("Создать студента"):
+            first_response = students_api.create_student(prepare_student_data)
+            assert first_response.is_success
+
+            first_data = first_response.json()
+            validate(
+                instance=first_data,
+                schema=STUDENT_RESPONSE,
+            )
+            assert first_data["status"] == 1
+
+        with allure.step("Повторно создать студента с теми же данными"):
+            second_response = students_api.create_student(prepare_student_data)
+
+        with allure.step("Проверить статус повторного создания"):
+            assert second_response.status_code == 409
+
+        with allure.step("Проверить тело ответа"):
+            data = second_response.json()
+
+            assert isinstance(data["message"], str)
 
     @pytest.mark.api
     @pytest.mark.smoke
@@ -168,3 +232,31 @@ class TestStudents:
             )
 
             assert created_student not in students_data["students"]
+
+    @pytest.mark.api
+    @pytest.mark.negative
+    @allure.title("Повторное удаление студента")
+    def test_delete_student_twice(
+        self,
+        students_api: StudentsAPI,
+        created_student: dict[str, Any],
+    ) -> None:
+        student_id = created_student["id"]
+
+        with allure.step(f"Удалить студента DELETE /student/{student_id}"):
+            first_response = students_api.delete_student(student_id)
+            assert first_response.status_code == 200
+
+        with allure.step(f"Повторно удалить студента DELETE /student/{student_id}"):
+            second_response = students_api.delete_student(student_id)
+
+        with allure.step("Проверить статус повторного удаления"):
+            assert second_response.status_code == 404
+
+        with allure.step("Проверить тело ответа"):
+            data = second_response.json()
+
+            validate(
+                instance=data,
+                schema=DELETE_STUDENT_RESPONSE,
+            )
