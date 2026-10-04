@@ -17,8 +17,18 @@ pytest_plugins = [
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
-    rep = outcome.get_result()
-    setattr(item, f"rep_{rep.when}", rep)
+    report = outcome.get_result()
+    setattr(item, f"rep_{report.when}", report)
+
+    test_finished = report.when == "call"
+    setup_interrupted = report.when == "setup" and not report.passed
+
+    if test_finished or setup_interrupted:
+        funcargs = getattr(item, "funcargs", {})
+        client = funcargs.get("http_client")
+        history = client.history if client is not None else []
+
+        attach_http_history(history)
 
 @pytest.fixture(scope="session")
 def base_url() -> str:
@@ -31,15 +41,10 @@ def base_url() -> str:
 @pytest.fixture
 def http_client(
     base_url: str,
-    request: pytest.FixtureRequest,
 ):
     """Создаёт HTTP-клиент для теста и закрывает его после выполнения"""
     client = HTTPClient(base_url=base_url)
-    yield client
-
     try:
-        report = getattr(request.node, "rep_call", None)
-        if report is not None and report.failed:
-            attach_http_history(client.history)
+        yield client
     finally:
         client.close()

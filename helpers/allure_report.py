@@ -36,11 +36,14 @@ def _parse_body(content: bytes) -> Any:
 
 
 def attach_http_history(history: list[HTTPExchange]) -> None:
-    """Прикладывает историю HTTP-вызовов к текущему тесту в Allure"""
+    """Прикладывает лог HTTP-вызовов к текущему тесту в Allure"""
+    exchanges = []
+
     for index, exchange in enumerate(history, start=1):
         response = exchange.response
 
-        data = {
+        exchanges.append({
+            "number": index,
             "request": {
                 "method": exchange.request.method,
                 "url": str(exchange.request.url),
@@ -64,10 +67,15 @@ def attach_http_history(history: list[HTTPExchange]) -> None:
                 if exchange.error_type is not None
                 else None
             ),
-        }
+        })
 
-        allure.attach(
-            json.dumps(data, ensure_ascii=False, indent=2),
-            name=f"HTTP {index}: {exchange.request.method}",
-            attachment_type=allure.attachment_type.JSON,
-        )
+    log = {
+        "request_count": len(exchanges),
+        "exchanges": exchanges,
+    }
+
+    allure.attach(
+        json.dumps(log, ensure_ascii=False, indent=2),
+        name="HTTP log",
+        attachment_type=allure.attachment_type.JSON,
+    )
