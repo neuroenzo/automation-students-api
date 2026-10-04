@@ -1,6 +1,8 @@
-## Автоматизированные тесты для Students API.
+## Автоматизированные тесты для Students API
 
 ### Установка
+
+Для работы нужен отдельно установленный uv
 
 uv sync
 cp .env.example .env
@@ -11,11 +13,15 @@ cp .env.example .env
 uv run pytest -v -s -l
 ```
 
+### Allure-отчет
+
+### Запуск с allure-отчетом
+```shell
+uv run pytest -v -s -l --alluredir=allure-results
+```
 Результаты Allure сохраняются в `allure-results`.
 
-### Allure-отчёт
-
-Для просмотра отчёта нужен установленный Allure CLI:
+Для просмотра отчета нужен установленный Allure CLI:
 
 ```shell
 allure serve allure-results
