@@ -53,7 +53,7 @@ STUDENTS = {
 }
 
 
-CREATE_STUDENT_RESPONSE = {
+STUDENT_RESPONSE = {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
