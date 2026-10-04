@@ -7,7 +7,7 @@ from src.models.students import StudentPayload
 
 
 class StudentsAPI:
-    """Методы для работы с эндпоинтами студентов."""
+    """Методы для работы с эндпоинтами студентов"""
 
     STUDENTS_PATH = "/student"
 
@@ -15,14 +15,14 @@ class StudentsAPI:
         self._http_client = http_client
 
     def get_students(self) -> httpx.Response:
-        """Возвращает список студентов."""
+        """Возвращает список студентов"""
         return self._http_client.request(
             "GET",
             self.STUDENTS_PATH,
         )
 
     def create_student(self, student: StudentPayload) -> httpx.Response:
-        """Создаёт студента."""
+        """Создаёт студента"""
         return self._http_client.request(
             "POST",
             self.STUDENTS_PATH,
