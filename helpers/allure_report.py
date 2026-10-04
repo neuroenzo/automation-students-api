@@ -6,7 +6,6 @@ import httpx
 
 from src.http_client import HTTPExchange
 
-
 SENSITIVE_HEADERS = {
     "authorization",
     "cookie",

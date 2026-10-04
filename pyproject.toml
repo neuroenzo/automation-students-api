@@ -5,15 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "allure-pytest>=2.16.2",
+    "faker>=40.40.0",
     "httpx>=0.28.1",
     "jsonschema>=4.26.0",
-    "python-dotenv>=1.2.1",
-]
-
-[dependency-groups]
-dev = [
-    "allure-pytest>=2.16.2",
     "pytest>=9.1.1",
+    "python-dotenv>=1.2.1",
     "ruff>=0.16.10",
 ]
 
@@ -37,4 +34,6 @@ addopts = [
 markers = [
     "smoke: быстрые критические проверки",
     "api: API-тесты",
+    "positive: позитивные тесты",
+    "negative: негативные тесты",
 ]
