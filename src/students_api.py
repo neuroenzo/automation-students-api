@@ -1,10 +1,13 @@
+from dataclasses import asdict
+
 import httpx
 
 from src.http_client import HTTPClient
+from src.models.students import StudentPayload
 
 
 class StudentsAPI:
-    """Методы для работы с эндпоинтами студентов."""
+    """Методы для работы с эндпоинтами студентов"""
 
     STUDENTS_PATH = "/student"
 
@@ -12,8 +15,31 @@ class StudentsAPI:
         self._http_client = http_client
 
     def get_students(self) -> httpx.Response:
-        """Возвращает спискок студентов."""
         return self._http_client.request(
             "GET",
             self.STUDENTS_PATH,
+        )
+
+    def create_student(self, student: StudentPayload) -> httpx.Response:
+        return self._http_client.request(
+            "POST",
+            self.STUDENTS_PATH,
+            json=asdict(student),
+        )
+
+    def update_student(
+        self,
+        student_id: int,
+        student: StudentPayload,
+    ) -> httpx.Response:
+        return self._http_client.request(
+            "PUT",
+            f"{self.STUDENTS_PATH}/{student_id}",
+            json=asdict(student),
+        )
+
+    def delete_student(self, student_id: int) -> httpx.Response:
+        return self._http_client.request(
+            "DELETE",
+            f"{self.STUDENTS_PATH}/{student_id}",
         )

@@ -6,7 +6,7 @@ import httpx
 
 @dataclass
 class HTTPExchange:
-    """Данные одного HTTP-вызова: запрос, ответ или ошибка."""
+    """Данные одного HTTP-вызова: запрос, ответ или ошибка"""
 
     request: httpx.Request
     response: httpx.Response | None = None
@@ -15,7 +15,7 @@ class HTTPExchange:
 
 
 class HTTPClient:
-    """Настриаваемая обертка для HTTP-запросов к тестируемому API."""
+    """Настриаваемая обертка для HTTP-запросов к тестируемому API"""
 
     def __init__(
         self,
@@ -60,5 +60,4 @@ class HTTPClient:
         return response
 
     def close(self) -> None:
-        """Закрывает сетевые соединения и освобождает связанные ресурсы."""
         self._client.close()

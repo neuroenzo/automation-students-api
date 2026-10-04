@@ -6,7 +6,6 @@ import httpx
 
 from src.http_client import HTTPExchange
 
-
 SENSITIVE_HEADERS = {
     "authorization",
     "cookie",
@@ -16,7 +15,7 @@ SENSITIVE_HEADERS = {
 
 
 def _mask_headers(headers: httpx.Headers) -> dict[str, str]:
-    """Скрывает чувствительные значения HTTP-заголовков."""
+    """Скрывает чувствительные значения HTTP-заголовков"""
     return {
         name: "***" if name.lower() in SENSITIVE_HEADERS else value
         for name, value in headers.items()
@@ -24,7 +23,7 @@ def _mask_headers(headers: httpx.Headers) -> dict[str, str]:
 
 
 def _parse_body(content: bytes) -> Any:
-    """Преобразует тело запроса или ответа в JSON либо текст."""
+    """Преобразует тело запроса или ответа в JSON либо текст"""
     if not content:
         return None
 
@@ -37,7 +36,7 @@ def _parse_body(content: bytes) -> Any:
 
 
 def attach_http_history(history: list[HTTPExchange]) -> None:
-    """Прикладывает историю HTTP-вызовов к текущему тесту в Allure."""
+    """Прикладывает историю HTTP-вызовов к текущему тесту в Allure"""
     for index, exchange in enumerate(history, start=1):
         response = exchange.response
 

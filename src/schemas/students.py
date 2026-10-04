@@ -51,3 +51,43 @@ STUDENTS = {
         "students",
     ],
 }
+
+
+STUDENT_RESPONSE = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "message": {
+            "type": "string",
+        },
+        "status": {
+            "type": "integer",
+            "enum": [0, 1],
+        },
+        "student": STUDENT,
+    },
+    "required": [
+        "message",
+        "status",
+        "student",
+    ],
+}
+
+
+DELETE_STUDENT_RESPONSE = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "message": {
+            "type": "string",
+        },
+        "status": {
+            "type": "integer",
+            "enum": [0, 1],
+        },
+    },
+    "required": [
+        "message",
+        "status",
+    ],
+}
