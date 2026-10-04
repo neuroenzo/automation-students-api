@@ -37,3 +37,9 @@ class StudentsAPI:
             f"{self.STUDENTS_PATH}/{student_id}",
             json=asdict(student),
         )
+
+    def delete_student(self, student_id: int) -> httpx.Response:
+        return self._http_client.request(
+            "DELETE",
+            f"{self.STUDENTS_PATH}/{student_id}",
+        )

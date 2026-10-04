@@ -6,7 +6,7 @@ import pytest
 from jsonschema import validate
 
 from src.models.students import StudentPayload
-from src.schemas.students import STUDENT_RESPONSE, STUDENTS
+from src.schemas.students import DELETE_STUDENT_RESPONSE, STUDENT_RESPONSE, STUDENTS
 from src.students_api import StudentsAPI
 
 
@@ -127,4 +127,44 @@ class TestStudents:
             )
 
             assert data["student"] in students_data["students"]
+            assert created_student not in students_data["students"]
+
+    @pytest.mark.api
+    @pytest.mark.smoke
+    @pytest.mark.positive
+    @allure.title("Удаление студента")
+    def test_delete_student(
+        self,
+        students_api: StudentsAPI,
+        created_student: dict[str, Any],
+    ) -> None:
+        student_id = created_student["id"]
+
+        with allure.step(f"Отправить DELETE /student/{student_id}"):
+            response = students_api.delete_student(student_id)
+
+        with allure.step("Проверить статус ответа"):
+            assert response.status_code == 200
+
+        with allure.step("Проверить тело ответа"):
+            data = response.json()
+
+            validate(
+                instance=data,
+                schema=DELETE_STUDENT_RESPONSE,
+            )
+
+            assert data["message"] == "Student deleted successfully"
+            assert data["status"] == 1
+
+        with allure.step("Проверить отсутствие студента в списке"):
+            students_response = students_api.get_students()
+            assert students_response.status_code == 200
+
+            students_data = students_response.json()
+            validate(
+                instance=students_data,
+                schema=STUDENTS,
+            )
+
             assert created_student not in students_data["students"]
