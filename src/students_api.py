@@ -1,6 +1,9 @@
+from dataclasses import asdict
+
 import httpx
 
 from src.http_client import HTTPClient
+from src.models.students import StudentPayload
 
 
 class StudentsAPI:
@@ -12,8 +15,16 @@ class StudentsAPI:
         self._http_client = http_client
 
     def get_students(self) -> httpx.Response:
-        """Возвращает спискок студентов."""
+        """Возвращает список студентов."""
         return self._http_client.request(
             "GET",
             self.STUDENTS_PATH,
+        )
+
+    def create_student(self, student: StudentPayload) -> httpx.Response:
+        """Создаёт студента."""
+        return self._http_client.request(
+            "POST",
+            self.STUDENTS_PATH,
+            json=asdict(student),
         )
