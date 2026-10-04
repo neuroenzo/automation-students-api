@@ -41,7 +41,7 @@ def created_student(
     fake: Faker,
 ) -> dict[str, Any]:
     response = students_api.create_student(_build_student(fake))
-    assert response.status_code == 200
+    assert response.is_success
 
     data = response.json()
     validate(

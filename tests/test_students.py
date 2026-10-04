@@ -47,7 +47,7 @@ class TestStudents:
             response = students_api.create_student(prepare_student_data)
 
         with allure.step("Проверить статус ответа"):
-            assert response.status_code == 200
+            assert response.status_code == 201
 
         with allure.step("Проверить тело ответа"):
             data = response.json()
@@ -77,6 +77,40 @@ class TestStudents:
             )
 
             assert data["student"] in students_data["students"]
+
+    @pytest.mark.api
+    @pytest.mark.negative
+    @pytest.mark.parametrize(
+        "missing_field",
+        [
+            "email",
+            "gender",
+            "name",
+            "phone_no",
+            "status",
+        ],
+    )
+    @allure.title("Создание студента без обязательного поля: {missing_field}")
+    def test_create_student_without_required_field(
+        self,
+        students_api: StudentsAPI,
+        prepare_student_data: StudentPayload,
+        missing_field: str,
+    ) -> None:
+        student_payload = asdict(prepare_student_data)
+        student_payload.pop(missing_field)
+
+        with allure.step(f"Отправить POST /student без поля {missing_field}"):
+            response = students_api.create_student(student_payload)
+
+        with allure.step("Проверить статус ответа"):
+            assert response.status_code == 400
+
+        with allure.step("Проверить тело ответа"):
+            assert response.json() == {
+                "message": "Wrong JSON, student not created",
+                "status": 0,
+            }
 
     @pytest.mark.api
     @pytest.mark.smoke
