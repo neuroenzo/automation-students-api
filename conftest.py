@@ -11,8 +11,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(PROJECT_ROOT / ".env")
 
 pytest_plugins = [
-    'fixtures.students',
+    "fixtures.students",
 ]
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -31,6 +32,7 @@ def pytest_runtest_makereport(item, call):
 
         attach_http_history(history, test_dir)
 
+
 @pytest.fixture(scope="session")
 def base_url() -> str:
     """Возвращает базовый URL тестируемого API из переменных окружения"""
@@ -38,6 +40,7 @@ def base_url() -> str:
     if not url:
         raise RuntimeError("BASE_URL is not set")
     return url.rstrip("/")
+
 
 @pytest.fixture
 def http_client(
@@ -49,6 +52,7 @@ def http_client(
         yield client
     finally:
         client.close()
+
 
 @pytest.fixture(autouse=True)
 def tmp_test_dir(tmp_path: Path) -> Path:

@@ -46,32 +46,34 @@ def attach_http_history(
     for index, exchange in enumerate(history, start=1):
         response = exchange.response
 
-        exchanges.append({
-            "number": index,
-            "request": {
-                "method": exchange.request.method,
-                "url": str(exchange.request.url),
-                "headers": _mask_headers(exchange.request.headers),
-                "body": _parse_body(exchange.request.content),
-            },
-            "response": (
-                {
-                    "status_code": response.status_code,
-                    "headers": _mask_headers(response.headers),
-                    "body": _parse_body(response.content),
-                }
-                if response is not None
-                else None
-            ),
-            "error": (
-                {
-                    "type": exchange.error_type,
-                    "message": exchange.error_message,
-                }
-                if exchange.error_type is not None
-                else None
-            ),
-        })
+        exchanges.append(
+            {
+                "number": index,
+                "request": {
+                    "method": exchange.request.method,
+                    "url": str(exchange.request.url),
+                    "headers": _mask_headers(exchange.request.headers),
+                    "body": _parse_body(exchange.request.content),
+                },
+                "response": (
+                    {
+                        "status_code": response.status_code,
+                        "headers": _mask_headers(response.headers),
+                        "body": _parse_body(response.content),
+                    }
+                    if response is not None
+                    else None
+                ),
+                "error": (
+                    {
+                        "type": exchange.error_type,
+                        "message": exchange.error_message,
+                    }
+                    if exchange.error_type is not None
+                    else None
+                ),
+            }
+        )
 
     log = {
         "request_count": len(exchanges),
