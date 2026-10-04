@@ -26,3 +26,14 @@ class StudentsAPI:
             self.STUDENTS_PATH,
             json=asdict(student),
         )
+
+    def update_student(
+        self,
+        student_id: int,
+        student: StudentPayload,
+    ) -> httpx.Response:
+        return self._http_client.request(
+            "PUT",
+            f"{self.STUDENTS_PATH}/{student_id}",
+            json=asdict(student),
+        )
