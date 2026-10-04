@@ -63,7 +63,7 @@ uv run pytest -v -s -l --alluredir=allure-results
 allure serve allure-results
 ```
 
-### Запуск через Make
+#### Запуск через Make
 
 ```shell
 make all-tests
