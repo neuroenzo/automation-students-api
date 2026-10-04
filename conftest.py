@@ -22,7 +22,7 @@ def pytest_runtest_makereport(item, call):
 
 @pytest.fixture(scope="session")
 def base_url() -> str:
-    """Возвращает базовый URL тестируемого API из переменных окружения."""
+    """Возвращает базовый URL тестируемого API из переменных окружения"""
     url = os.getenv("BASE_URL")
     if not url:
         raise RuntimeError("BASE_URL is not set")
@@ -33,7 +33,7 @@ def http_client(
     base_url: str,
     request: pytest.FixtureRequest,
 ):
-    """Создаёт HTTP-клиент для теста и закрывает его после выполнения."""
+    """Создаёт HTTP-клиент для теста и закрывает его после выполнения"""
     client = HTTPClient(base_url=base_url)
     yield client
 
