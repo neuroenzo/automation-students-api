@@ -60,5 +60,4 @@ class HTTPClient:
         return response
 
     def close(self) -> None:
-        """Закрывает сетевые соединения и освобождает связанные ресурсы"""
         self._client.close()

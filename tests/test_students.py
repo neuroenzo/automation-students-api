@@ -16,7 +16,6 @@ class TestStudents:
     @pytest.mark.positive
     @allure.title("Получение списка студентов")
     def test_get_students(self, students_api: StudentsAPI) -> None:
-        """Тест успешного получения списка студентов"""
         with allure.step("Отправить GET /student"):
             response = students_api.get_students()
 
@@ -43,8 +42,6 @@ class TestStudents:
         students_api: StudentsAPI,
         new_student: StudentPayload,
     ) -> None:
-        """Тест успешного создания студента"""
-
         with allure.step("Отправить POST /student"):
             response = students_api.create_student(new_student)
 
