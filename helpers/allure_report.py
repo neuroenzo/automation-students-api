@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import allure
@@ -35,8 +36,11 @@ def _parse_body(content: bytes) -> Any:
         return text
 
 
-def attach_http_history(history: list[HTTPExchange]) -> None:
-    """Прикладывает лог HTTP-вызовов к текущему тесту в Allure"""
+def attach_http_history(
+    history: list[HTTPExchange],
+    test_dir: Path,
+) -> None:
+    """Сохраняет HTTP-лог и прикладывает его к текущему тесту в Allure"""
     exchanges = []
 
     for index, exchange in enumerate(history, start=1):
@@ -74,8 +78,14 @@ def attach_http_history(history: list[HTTPExchange]) -> None:
         "exchanges": exchanges,
     }
 
-    allure.attach(
+    log_path = test_dir / "http-log.json"
+    log_path.write_text(
         json.dumps(log, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    allure.attach.file(
+        str(log_path),
         name="HTTP log",
         attachment_type=allure.attachment_type.JSON,
     )
