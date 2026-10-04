@@ -113,6 +113,36 @@ class TestStudents:
             }
 
     @pytest.mark.api
+    @pytest.mark.negative
+    @allure.title("Повторное создание студента с одинаковыми данными")
+    def test_create_duplicate_student(
+        self,
+        students_api: StudentsAPI,
+        prepare_student_data: StudentPayload,
+    ) -> None:
+        with allure.step("Создать студента"):
+            first_response = students_api.create_student(prepare_student_data)
+            assert first_response.is_success
+
+            first_data = first_response.json()
+            validate(
+                instance=first_data,
+                schema=STUDENT_RESPONSE,
+            )
+            assert first_data["status"] == 1
+
+        with allure.step("Повторно создать студента с теми же данными"):
+            second_response = students_api.create_student(prepare_student_data)
+
+        with allure.step("Проверить статус повторного создания"):
+            assert second_response.status_code == 409
+
+        with allure.step("Проверить тело ответа"):
+            data = second_response.json()
+
+            assert isinstance(data["message"], str)
+
+    @pytest.mark.api
     @pytest.mark.smoke
     @pytest.mark.positive
     @allure.title("Обновление студента")
@@ -202,3 +232,31 @@ class TestStudents:
             )
 
             assert created_student not in students_data["students"]
+
+    @pytest.mark.api
+    @pytest.mark.negative
+    @allure.title("Повторное удаление студента")
+    def test_delete_student_twice(
+        self,
+        students_api: StudentsAPI,
+        created_student: dict[str, Any],
+    ) -> None:
+        student_id = created_student["id"]
+
+        with allure.step(f"Удалить студента DELETE /student/{student_id}"):
+            first_response = students_api.delete_student(student_id)
+            assert first_response.status_code == 200
+
+        with allure.step(f"Повторно удалить студента DELETE /student/{student_id}"):
+            second_response = students_api.delete_student(student_id)
+
+        with allure.step("Проверить статус повторного удаления"):
+            assert second_response.status_code == 404
+
+        with allure.step("Проверить тело ответа"):
+            data = second_response.json()
+
+            validate(
+                instance=data,
+                schema=DELETE_STUDENT_RESPONSE,
+            )
